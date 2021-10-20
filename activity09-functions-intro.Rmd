@@ -204,10 +204,17 @@ For functions that will be used again, it is a good practice to add argument val
 ...
 ```
 
+
+
 Explore the two argument validity checks by adding them to the beginning of your function above (one, then remove it and add the other) to check if the input `x` is a numeric vector (`is.numeric`).
 
 
-
+```{r adding_stop_function}
+range_new <- function(x){
+  if(is.numeric(x)) max(x)-min(x)
+  else stop("Not numeric value!")
+}
+```
 
 ### Extend your function
 
@@ -227,9 +234,19 @@ Test your function with:
 
 Also test that your function breaks when it should.
 
+```{r create_quant_diff}
+quantile_range <- function(x, probs){
+  if(is.numeric(x)) {
+    quantile(x, probs = probs[2]) - quantile(x, probs = probs[1])
+  }
+  else stop("Values not numeric")
+}
+quantile_range(gapminder$lifeExp, probs = c(0.25, 0.75))
+quantile_range(gapminder$lifeExp, probs = c(0, 1))
+```
 
 
-
+**No errors. For the IQR of lifeExp we get 22.6475 years and the range is 59.004 years**
 
 Since you we using the `quantile` function in the `quantile_range` function, we should be consistent with the arguments that we specify.
 This is not necessary, but is extremely beneficial for humans to read, write, and use the code.
@@ -243,6 +260,9 @@ What happens if you call your `quantile_range` function, but do not supply speci
 That is, check `quantile_range(gapminder$lifeExp)`.
 
 
+```{r checking_quantdiff}
+quantile_range(gapminder$lifeExp)
+```
 
 
 
@@ -256,6 +276,15 @@ Check that your function works by specifying and not specifying the `probs` argu
 Then, upgrade your function to contain a validity check for the new `probs` argument.
 
 
+```{r adding_default_values}
+quantile_range <- function(x, probs = c(0,1)){
+  if(is.numeric(x)) {
+    quantile(x, probs = probs[2]) - quantile(x, probs = probs[1])
+  }
+  else stop("Values not numeric")
+}
+quantile_range(gapminder$lifeExp)
+```
 
 
 ### Handling `NA`s
@@ -273,13 +302,22 @@ quantile(z)
 quantile(z, na.rm = TRUE)
 ```
 
-**Response:**
+
+**Default value is FALSE:**
 
 Setting `na.rm` within your function without providing users a way to override this behavior would be ill-advised.
 Update your `quant_diff` function to be more robust (i.e., handle `NA`s) while also providing users to control the behavior around `NA`s.
 You are welcome to enforce your preferred choice when defining the default behavior, but be sure to provide a way for users to control this.
 
-
+```{r NA_quant_diff}
+quant_diff<-function(x, probs=c(0, 1), na.rm=FALSE, ...){
+  if(is.numeric(x)){
+    quantile(x, probs=probs[2], na.rm=na.rm)-quantile(x, probs=probs[1], na.rm=na.rm)
+  }
+else stop ("Not Numeric")
+}
+quant_diff(z, na.rm=TRUE)
+```
 
 
 

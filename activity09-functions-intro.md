@@ -317,6 +317,13 @@ Explore the two argument validity checks by adding them to the beginning
 of your function above (one, then remove it and add the other) to check
 if the input `x` is a numeric vector (`is.numeric`).
 
+``` r
+range_new <- function(x){
+  if(is.numeric(x)) max(x)-min(x)
+  else stop("Not numeric value!")
+}
+```
+
 ### Extend your function
 
 Calculating the range of a set of data is convenient, but it would be
@@ -331,6 +338,29 @@ the `probs` argument. Test your function with:
 -   RANGE: `quantile_range(gapminder$lifeExp, probs = c(0, 1))`
 
 Also test that your function breaks when it should.
+
+``` r
+quantile_range <- function(x, probs){
+  if(is.numeric(x)) {
+    quantile(x, probs = probs[2]) - quantile(x, probs = probs[1])
+  }
+  else stop("Values not numeric")
+}
+quantile_range(gapminder$lifeExp, probs = c(0.25, 0.75))
+```
+
+    ##     75% 
+    ## 22.6475
+
+``` r
+quantile_range(gapminder$lifeExp, probs = c(0, 1))
+```
+
+    ##   100% 
+    ## 59.004
+
+**No errors. For the IQR of lifeExp we get 22.6475 years and the range
+is 59.004 years**
 
 Since you we using the `quantile` function in the `quantile_range`
 function, we should be consistent with the arguments that we specify.
@@ -347,6 +377,12 @@ What happens if you call your `quantile_range` function, but do not
 supply specific probabilities? That is, check
 `quantile_range(gapminder$lifeExp)`.
 
+``` r
+quantile_range(gapminder$lifeExp)
+```
+
+    ## Error in quantile.default(x, probs = probs[2]): argument "probs" is missing, with no default
+
 It is nice to provide some reasonable default values for certain
 arguments. For `quantile_range`, it does not make since to specify a
 default value for the primary input (`x`), but default values for
@@ -360,6 +396,19 @@ the default values for the minimum and maximum. Check that your function
 works by specifying and not specifying the `probs` argument. Then,
 upgrade your function to contain a validity check for the new `probs`
 argument.
+
+``` r
+quantile_range <- function(x, probs = c(0,1)){
+  if(is.numeric(x)) {
+    quantile(x, probs = probs[2]) - quantile(x, probs = probs[1])
+  }
+  else stop("Values not numeric")
+}
+quantile_range(gapminder$lifeExp)
+```
+
+    ##   100% 
+    ## 59.004
 
 ### Handling `NA`s
 
@@ -389,7 +438,7 @@ quantile(z, na.rm = TRUE)
     ##     0%    25%    50%    75%   100% 
     ## 23.599 48.228 60.765 70.846 82.603
 
-**Response:**
+**Default value is FALSE:**
 
 Setting `na.rm` within your function without providing users a way to
 override this behavior would be ill-advised. Update your `quant_diff`
@@ -397,6 +446,19 @@ function to be more robust (i.e., handle `NA`s) while also providing
 users to control the behavior around `NA`s. You are welcome to enforce
 your preferred choice when defining the default behavior, but be sure to
 provide a way for users to control this.
+
+``` r
+quant_diff<-function(x, probs=c(0, 1), na.rm=FALSE, ...){
+  if(is.numeric(x)){
+    quantile(x, probs=probs[2], na.rm=na.rm)-quantile(x, probs=probs[1], na.rm=na.rm)
+  }
+else stop ("Not Numeric")
+}
+quant_diff(z, na.rm=TRUE)
+```
+
+    ##   100% 
+    ## 59.004
 
 ![](README-img/noun_pause.png) **Planned Pause Point**: If you have any
 questions, contact your instructor. Otherwise feel free to continue on.
